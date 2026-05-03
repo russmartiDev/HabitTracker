@@ -19,20 +19,16 @@ export default async function ChatPage() {
 
   return (
     <div className="rise" style={{ display: 'flex', flexDirection: 'column' }}>
-      <div className="page-header">
-        <div>
-          <div className="t-eyebrow" style={{ marginBottom: 8 }}>
-            Companion
-          </div>
-          <h1 className="page-title">
-            A space to <span className="ink-underline">think out loud</span>.
-          </h1>
-          <p className="page-subtitle">
-            I have context from your last 7 days. Tone:{' '}
-            <span style={{ textTransform: 'capitalize' }}>{user.communication_pref}</span>.
-          </p>
-        </div>
-      </div>
+      <h1 className="page-title" style={{ fontSize: 32, margin: '0 0 4px' }}>
+        Think out{' '}
+        <span className="h-display" style={{ color: 'var(--accent-deep)' }}>
+          loud
+        </span>
+        .
+      </h1>
+      <p className="lede" style={{ marginBottom: 18 }}>
+        Context from your last 7 days · tone <strong>{user.communication_pref}</strong>.
+      </p>
 
       {!hasApiKey() && (
         <div

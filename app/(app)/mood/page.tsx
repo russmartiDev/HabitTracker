@@ -45,23 +45,18 @@ export default async function MoodPage() {
 
   return (
     <div className="rise">
-      <div className="page-header">
-        <div>
-          <div className="t-eyebrow" style={{ marginBottom: 8 }}>
-            Mood Log
-          </div>
-          <h1 className="page-title">
-            How are you,{' '}
-            <span className="h-display" style={{ color: 'var(--accent-deep)' }}>
-              now
-            </span>
-            ?
-          </h1>
-          <p className="page-subtitle">
-            Log up to 5 times a day. The patterns matter more than any single one.
-          </p>
-        </div>
-      </div>
+      <h1 className="page-title" style={{ fontSize: 32, margin: '0 0 4px' }}>
+        How are you,{' '}
+        <span className="h-display" style={{ color: 'var(--accent-deep)' }}>
+          now
+        </span>
+        ?
+      </h1>
+      <p className="lede">
+        {moodValues.length > 0
+          ? `${avg} average across ${moodValues.length} day${moodValues.length === 1 ? '' : 's'}.`
+          : 'Up to five times a day. The patterns matter more than any single one.'}
+      </p>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: 16 }}>
         <MoodLogForm />

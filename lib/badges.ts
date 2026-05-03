@@ -8,21 +8,16 @@ interface CheckInWithLogs extends CheckInRow {
   hourLocal: number;
 }
 
-function alreadyEarned(userId: number, code: string): boolean {
-  const db = getDb();
-  const r = db
-    .prepare('SELECT 1 FROM user_badges WHERE user_id = ? AND badge_code = ?')
-    .get(userId, code);
-  return !!r;
-}
-
 function award(userId: number, code: string): boolean {
-  if (alreadyEarned(userId, code)) return false;
   const db = getDb();
-  db.prepare(
-    `INSERT OR IGNORE INTO user_badges (user_id, badge_code, earned_at) VALUES (?, ?, ?)`,
-  ).run(userId, code, Date.now());
-  return true;
+  // INSERT OR IGNORE returns changes=1 only if the row was actually inserted.
+  // Saves a SELECT per badge.
+  const r = db
+    .prepare(
+      `INSERT OR IGNORE INTO user_badges (user_id, badge_code, earned_at) VALUES (?, ?, ?)`,
+    )
+    .run(userId, code, Date.now());
+  return r.changes === 1;
 }
 
 interface CheckInRecord {
@@ -36,9 +31,17 @@ interface CheckInRecord {
 
 function loadHistory(userId: number): CheckInRecord[] {
   const db = getDb();
+  // Single query — aggregate habit_logs into a JSON array so we don't do
+  // N+1 round-trips. SQLite has json_group_array since 3.38.
   const rows = db
     .prepare(
-      `SELECT id, date, mood, reflection, created_at FROM check_ins WHERE user_id = ? ORDER BY date DESC`,
+      `SELECT
+         ci.id, ci.date, ci.mood, ci.reflection, ci.created_at,
+         (SELECT json_group_array(json_object('habit_id', habit_id, 'status', status))
+          FROM habit_logs WHERE check_in_id = ci.id) AS logs_json
+       FROM check_ins ci
+       WHERE ci.user_id = ?
+       ORDER BY ci.date DESC`,
     )
     .all(userId) as Array<{
     id: number;
@@ -46,22 +49,24 @@ function loadHistory(userId: number): CheckInRecord[] {
     mood: number;
     reflection: string | null;
     created_at: number;
+    logs_json: string | null;
   }>;
 
-  const logsStmt = db.prepare(
-    `SELECT habit_id, status FROM habit_logs WHERE check_in_id = ?`,
-  );
-
   return rows.map((r) => {
-    const logs = logsStmt.all(r.id) as Array<{ habit_id: number; status: string }>;
-    const yes = logs.filter((l) => l.status === 'yes').map((l) => l.habit_id);
-    const nonYes = logs.filter((l) => l.status !== 'yes').map((l) => l.habit_id);
-    const hour = new Date(r.created_at).getHours();
+    const logs: Array<{ habit_id: number; status: string }> = r.logs_json
+      ? JSON.parse(r.logs_json)
+      : [];
+    const yes: number[] = [];
+    const nonYes: number[] = [];
+    for (const l of logs) {
+      if (l.status === 'yes') yes.push(l.habit_id);
+      else nonYes.push(l.habit_id);
+    }
     return {
       date: r.date,
       mood: r.mood,
       reflectionLen: (r.reflection ?? '').trim().length,
-      hour,
+      hour: new Date(r.created_at).getHours(),
       habitYesIds: yes,
       habitNonYesIds: nonYes,
     };

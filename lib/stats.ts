@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import { getDb } from '@/lib/db';
 import { localDateString, shiftDate } from '@/lib/dates';
 import type { CheckInRow, UserStats } from '@/lib/types';
@@ -59,7 +60,7 @@ function computeStreak(dates: string[], today: string): { current: number; longe
   return { current, longest };
 }
 
-export function getUserStats(userId: number): UserStats {
+export const getUserStats = cache((userId: number): UserStats => {
   const db = getDb();
   const rows = db
     .prepare('SELECT date, xp_earned FROM check_ins WHERE user_id = ? ORDER BY date DESC')
@@ -83,7 +84,7 @@ export function getUserStats(userId: number): UserStats {
     daysActive: rows.length,
     lastCheckInDate: rows[0]?.date ?? null,
   };
-}
+});
 
 export interface MoodPoint {
   date: string;

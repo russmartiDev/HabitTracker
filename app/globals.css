@@ -94,6 +94,17 @@ body::before {
 button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; padding: 0; }
 input, textarea, select { font-family: inherit; color: inherit; }
 
+/* Inline links never carry the browser default underline. Affordance comes
+   from accent color, context, and trailing arrows in microcopy. */
+a, a:hover, a:focus, a:visited, a:active { text-decoration: none; color: inherit; }
+.sidebar a, .sidebar a:hover, .sidebar a:focus,
+.sidebar .nav-item, .sidebar .nav-item *,
+.sidebar .logo, .sidebar .logo * {
+  text-decoration: none !important;
+}
+/* Subtle hover lift on inline accent-colored links (not buttons or nav). */
+a[style*="--accent-deep"]:hover { opacity: 0.8; }
+
 /* ===== Type ===== */
 .h-display { font-family: var(--font-serif); font-weight: 400; font-style: italic; letter-spacing: -0.02em; }
 .t-mono { font-family: var(--font-mono); font-feature-settings: "tnum" 1; }
@@ -224,6 +235,30 @@ input, textarea, select { font-family: inherit; color: inherit; }
   border-color: var(--ink);
 }
 
+/* ===== Focus ring (accent-tinted, replaces browser default) ===== */
+:focus { outline: none; }
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+.btn:focus-visible,
+.chip:focus-visible,
+.input:focus-visible,
+.textarea:focus-visible,
+.mood-face:focus-visible {
+  outline-offset: 3px;
+}
+/* Sidebar nav: rely on the existing nav-item-active state for current-page
+   indication. Suppress the default focus ring on click (keep keyboard
+   focus visible only on tab navigation, not after a mouse click). */
+.nav-item:focus { outline: none; }
+.nav-item:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+  border-radius: 9px;
+}
+
 /* ===== Layout ===== */
 .app-shell {
   display: grid;
@@ -249,6 +284,42 @@ input, textarea, select { font-family: inherit; color: inherit; }
   padding: 36px 56px 80px;
   max-width: 1280px;
   width: 100%;
+}
+
+/* Mobile: collapse sidebar to a top bar with horizontal scroll */
+@media (max-width: 760px) {
+  .app-shell {
+    grid-template-columns: 1fr;
+  }
+  .sidebar {
+    position: sticky;
+    top: 0;
+    height: auto;
+    flex-direction: row;
+    border-right: none;
+    border-bottom: 1px solid var(--line);
+    padding: 12px 16px;
+    gap: 8px;
+    overflow-x: auto;
+    z-index: 5;
+  }
+  .sidebar > .logo { padding: 4px 8px; flex-shrink: 0; }
+  .sidebar > nav {
+    flex-direction: row !important;
+    flex: 1;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    gap: 2px;
+  }
+  .sidebar > nav .nav-item {
+    flex-shrink: 0;
+    padding: 8px 10px;
+    font-size: 13px;
+  }
+  .sidebar > .card { display: none; }
+  .main {
+    padding: 22px 18px 64px;
+  }
 }
 
 .nav-item {
@@ -380,6 +451,25 @@ input, textarea, select { font-family: inherit; color: inherit; }
   justify-content: space-between;
   align-items: flex-end;
   margin-bottom: 28px;
+}
+
+/* A quieter alternative to .page-header — single line of running text. */
+.lede {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 22px;
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+  color: var(--ink-soft);
+  margin: 4px 0 28px;
+  max-width: 64ch;
+}
+.lede strong {
+  color: var(--ink);
+  font-style: normal;
+  font-family: var(--font-sans);
+  font-weight: 600;
 }
 .page-title {
   font-size: 30px;

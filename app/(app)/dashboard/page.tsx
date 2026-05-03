@@ -38,27 +38,55 @@ export default async function DashboardPage() {
   const checkedIn = !!today;
   const todayMoodIdx = today ? today.mood - 1 : null;
 
+  // Day 1 / no-history: collapse to a single invitation card. The metrics
+  // grid only earns its space once there's data to show.
+  if (stats.daysActive === 0 && !checkedIn) {
+    return (
+      <div className="rise" style={{ maxWidth: 540, margin: '0 auto', paddingTop: 48 }}>
+        <div className="t-eyebrow" style={{ marginBottom: 8 }}>
+          {dayHeader}
+        </div>
+        <h1
+          className="page-title"
+          style={{ fontSize: 36, margin: '0 0 14px' }}
+        >
+          {timeOfDayGreeting()},{' '}
+          <span className="h-display" style={{ color: 'var(--accent-deep)' }}>
+            {user.name}
+          </span>
+          .
+        </h1>
+        <p className="lede" style={{ marginBottom: 32 }}>
+          First day in. Take five minutes when you&rsquo;re ready — one mood, your
+          habits, a single line of reflection.
+        </p>
+        <Link href="/checkin" className="btn btn-primary btn-lg btn-block">
+          Begin first check-in <Icon name="arrow-right" size={16} />
+        </Link>
+        <p className="tiny faint" style={{ marginTop: 20, textAlign: 'center' }}>
+          Streak, XP, calendar, and patterns appear as you build a record.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="rise">
-      <div className="page-header">
+      <div className="row between" style={{ marginBottom: 22, alignItems: 'flex-end' }}>
         <div>
-          <div className="t-eyebrow" style={{ marginBottom: 8 }}>
+          <div className="t-eyebrow" style={{ marginBottom: 6 }}>
             {dayHeader}
           </div>
-          <h1 className="page-title" style={{ fontSize: 36 }}>
-            {timeOfDayGreeting()}{' '}
+          <h1
+            className="page-title"
+            style={{ fontSize: 32, margin: 0 }}
+          >
+            {timeOfDayGreeting()},{' '}
             <span className="h-display" style={{ color: 'var(--accent-deep)' }}>
               {user.name}
             </span>
             .
           </h1>
-          <p className="page-subtitle">
-            {checkedIn
-              ? "You've already checked in. Your streak's safe."
-              : stats.daysActive === 0
-              ? 'First day in. Start with one small thing.'
-              : "You haven't checked in yet. Five minutes when you're ready."}
-          </p>
         </div>
         <div className="row gap-8">
           <Link href="/chat" className="btn btn-ghost">

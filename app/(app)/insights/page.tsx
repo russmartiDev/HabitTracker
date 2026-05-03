@@ -26,70 +26,28 @@ export default async function InsightsPage() {
       ? completion.reduce((a, b) => (a.rate30d > b.rate30d ? a : b))
       : null;
 
+  // Editorial sentence — pieces written conditionally so missing data doesn't read as a gap
+  const sentenceParts: string[] = [];
+  if (bestDay) sentenceParts.push(`Your best day is ${bestDay.label} (avg mood ${bestDay.avg.toFixed(1)})`);
+  if (mostConsistent && mostConsistent.totalDays > 0) {
+    sentenceParts.push(
+      `${mostConsistent.name} is your most consistent habit at ${Math.round(mostConsistent.rate30d * 100)}%`,
+    );
+  }
+  if (reflectionCount > 0) {
+    sentenceParts.push(`you've written ${reflectionCount} reflection${reflectionCount === 1 ? '' : 's'}`);
+  }
+  const editorial =
+    sentenceParts.length === 0
+      ? 'Patterns will surface here once you have a few check-ins on the record.'
+      : sentenceParts.join(', ') + '.';
+
   return (
     <div className="rise">
-      <div className="page-header">
-        <div>
-          <div className="t-eyebrow" style={{ marginBottom: 8 }}>
-            Insights
-          </div>
-          <h1 className="page-title">
-            What the <span className="ink-underline">data</span> is whispering.
-          </h1>
-          <p className="page-subtitle">
-            Patterns from your last {stats.daysActive} days.
-          </p>
-        </div>
-      </div>
-
-      {/* Stat row */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(4, 1fr)',
-          gap: 16,
-          marginBottom: 16,
-        }}
-      >
-        <StatCard label="Best day">
-          {bestDay ? (
-            <>
-              <div className="stat-num stat-num-sm">{bestDay.label}</div>
-              <div className="tiny muted" style={{ marginTop: 4 }}>
-                avg mood {bestDay.avg.toFixed(1)}
-              </div>
-            </>
-          ) : (
-            <Placeholder text="Need a few check-ins" />
-          )}
-        </StatCard>
-        <StatCard label="Most consistent">
-          {mostConsistent && mostConsistent.totalDays > 0 ? (
-            <>
-              <div className="stat-num stat-num-sm" style={{ fontSize: 22 }}>
-                {mostConsistent.name}
-              </div>
-              <div className="tiny muted" style={{ marginTop: 4 }}>
-                {Math.round(mostConsistent.rate30d * 100)}% of days
-              </div>
-            </>
-          ) : (
-            <Placeholder text="No habit data yet" />
-          )}
-        </StatCard>
-        <StatCard label="Reflections">
-          <div className="stat-num stat-num-sm">{reflectionCount}</div>
-          <div className="tiny muted" style={{ marginTop: 4 }}>
-            written
-          </div>
-        </StatCard>
-        <StatCard label="Total XP">
-          <div className="stat-num stat-num-sm t-mono">{stats.totalXp}</div>
-          <div className="tiny muted" style={{ marginTop: 4 }}>
-            L{stats.level}
-          </div>
-        </StatCard>
-      </div>
+      <h1 className="page-title" style={{ fontSize: 32, margin: '0 0 4px' }}>
+        Patterns.
+      </h1>
+      <p className="lede">{editorial}</p>
 
       {/* Habit completion + correlations */}
       <div
@@ -192,17 +150,6 @@ export default async function InsightsPage() {
           See badges →
         </Link>
       </div>
-    </div>
-  );
-}
-
-function StatCard({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div className="card">
-      <div className="t-eyebrow" style={{ marginBottom: 8 }}>
-        {label}
-      </div>
-      {children}
     </div>
   );
 }

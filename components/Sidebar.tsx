@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useLinkStatus } from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Icon, type IconName } from '@/components/Icon';
 import { NAV_ITEMS } from '@/components/visual';
@@ -25,10 +26,12 @@ export function Sidebar({ user }: Props) {
             <Link
               key={item.id}
               href={item.href}
+              prefetch
               className={`nav-item ${active ? 'nav-item-active' : ''}`}
             >
               <Icon name={item.icon as IconName} size={16} />
               {item.label}
+              <NavPending />
             </Link>
           );
         })}
@@ -67,5 +70,26 @@ export function Sidebar({ user }: Props) {
         </div>
       </div>
     </aside>
+  );
+}
+
+// useLinkStatus must be rendered as a descendant of the Link it observes.
+// Renders a small accent dot while navigation is in flight.
+function NavPending() {
+  const { pending } = useLinkStatus();
+  if (!pending) return null;
+  return (
+    <span
+      aria-hidden
+      style={{
+        marginLeft: 'auto',
+        width: 6,
+        height: 6,
+        borderRadius: 999,
+        background: 'currentColor',
+        opacity: 0.6,
+        animation: 'flicker 1s ease-in-out infinite',
+      }}
+    />
   );
 }

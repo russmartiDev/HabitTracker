@@ -4,17 +4,18 @@ import { getBadgeGallery } from '@/lib/badges';
 export default async function BadgesPage() {
   const user = await requireUser();
   const badges = getBadgeGallery(user.id);
+  const earnedCount = badges.filter((b) => b.earned_at).length;
   return (
     <div className="rise">
-      <div className="page-header">
-        <div>
-          <div className="t-eyebrow">Awards</div>
-          <h1 className="page-title">Badges</h1>
-          <p className="page-subtitle">
-            {badges.filter((b) => b.earned_at).length} of {badges.length} earned
-          </p>
-        </div>
-      </div>
+      <h1 className="page-title" style={{ fontSize: 32, margin: '0 0 4px' }}>
+        <span className="h-display" style={{ color: 'var(--accent-deep)' }}>
+          {earnedCount}
+        </span>{' '}
+        of {badges.length} earned.
+      </h1>
+      <p className="lede">
+        Little markers along the way. Not the point — but nice when they show up.
+      </p>
       <div
         style={{
           display: 'grid',

@@ -1,6 +1,7 @@
 import NextAuth, { type DefaultSession } from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 import argon2 from 'argon2';
+import { cache } from 'react';
 import { z } from 'zod';
 import { getDb } from '@/lib/db';
 import type { UserRow } from '@/lib/types';
@@ -69,7 +70,9 @@ export async function hashPassword(plain: string): Promise<string> {
   return argon2.hash(plain, { type: argon2.argon2id });
 }
 
-export async function getCurrentUser(): Promise<UserRow | null> {
+// React cache() dedupes calls within a single render — layout + page each
+// call requireUser() and we only want one auth() + one DB hit per request.
+export const getCurrentUser = cache(async (): Promise<UserRow | null> => {
   const session = await auth();
   if (!session?.user?.id) return null;
   const db = getDb();
@@ -77,7 +80,7 @@ export async function getCurrentUser(): Promise<UserRow | null> {
     | UserRow
     | undefined;
   return row ?? null;
-}
+});
 
 export async function requireUser(): Promise<UserRow> {
   const u = await getCurrentUser();
