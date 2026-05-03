@@ -1,0 +1,28 @@
+node_modules/
+.next/
+out/
+dist/
+
+# Local env
+.env
+.env.local
+.env.*.local
+
+# Database
+data/*.db
+data/*.db-journal
+data/*.db-wal
+data/*.db-shm
+!data/.gitkeep
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+npm-debug.log*
+*.log
+
+# IDE
+.vscode/
+.idea/
