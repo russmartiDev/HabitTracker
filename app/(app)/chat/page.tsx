@@ -19,33 +19,44 @@ export default async function ChatPage() {
 
   return (
     <div className="rise" style={{ display: 'flex', flexDirection: 'column' }}>
-      <h1 className="page-title" style={{ fontSize: 32, margin: '0 0 4px' }}>
-        Think out{' '}
-        <span className="h-display" style={{ color: 'var(--accent-deep)' }}>
-          loud
-        </span>
-        .
-      </h1>
-      <p className="lede" style={{ marginBottom: 18 }}>
-        Context from your last 7 days · tone <strong>{user.communication_pref}</strong>.
-      </p>
-
-      {!hasApiKey() && (
-        <div
-          className="card"
-          style={{
-            padding: 14,
-            marginBottom: 12,
-            background: 'var(--ochre-soft)',
-            fontSize: 13,
-          }}
-        >
-          <strong>Chat is read-only.</strong> No <code>ANTHROPIC_API_KEY</code> in the
-          server environment — sending a message will return a stub response.
+      <div className="page-wash">
+        <div className="page-wash-inner">
+          <div className="page-header">
+            <div>
+              <div className="notation-tag" style={{ marginBottom: 14 }}>
+                COMPANION
+              </div>
+              <h1 className="page-title">Think out loud.</h1>
+              <p className="page-subtitle">
+                Context from your last 7 days · tone{' '}
+                <strong style={{ color: 'var(--ink-deep)' }}>{user.communication_pref}</strong>.
+              </p>
+            </div>
+          </div>
         </div>
-      )}
+      </div>
 
-      <ChatInterface initialMessages={rows} greetingFirstName={firstName} />
+      <div className="page-body">
+        <div className="page-body-inner">
+          {!hasApiKey() && (
+            <div
+              className="card"
+              style={{
+                padding: 14,
+                marginBottom: 12,
+                background: 'var(--warn-soft)',
+                borderColor: 'var(--warn)',
+                fontSize: 13,
+              }}
+            >
+              <strong>Chat is read-only.</strong> No <code>ANTHROPIC_API_KEY</code> in the
+              server environment — sending a message will return a stub response.
+            </div>
+          )}
+
+          <ChatInterface initialMessages={rows} greetingFirstName={firstName} />
+        </div>
+      </div>
     </div>
   );
 }

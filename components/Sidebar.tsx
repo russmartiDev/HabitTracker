@@ -15,11 +15,25 @@ export function Sidebar({ user }: Props) {
   return (
     <aside className="sidebar">
       <div className="logo">
-        <div className="logo-mark">l</div>
+        <div className="logo-mark">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+            <rect x="2" y="6" width="3" height="12" fill="currentColor" rx="0.5" />
+            <text
+              x="9"
+              y="17"
+              fontFamily="Inter, sans-serif"
+              fontWeight="800"
+              fontSize="14"
+              fill="currentColor"
+            >
+              L
+            </text>
+          </svg>
+        </div>
         <span>lichen</span>
       </div>
 
-      <nav className="col gap-4">
+      <nav className="col gap-4" style={{ flex: '0 0 auto' }}>
         {NAV_ITEMS.map((item) => {
           const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
           return (
@@ -39,25 +53,43 @@ export function Sidebar({ user }: Props) {
 
       <div style={{ flex: 1 }} />
 
-      <div className="card card-warm" style={{ padding: 14, marginTop: 8 }}>
-        <div className="row gap-8" style={{ marginBottom: 10 }}>
+      <div
+        className="card card-warm"
+        style={{ padding: 12, display: 'flex', flexDirection: 'column', gap: 10 }}
+      >
+        <div className="row gap-10" style={{ alignItems: 'center' }}>
           <div
             style={{
               width: 32,
               height: 32,
-              borderRadius: 8,
+              borderRadius: 'var(--radius-pill)',
               background: 'var(--accent)',
               color: 'var(--paper)',
               display: 'grid',
               placeItems: 'center',
-              fontWeight: 600,
+              fontWeight: 700,
+              fontSize: 13,
+              fontFamily: 'var(--font-sans)',
+              flexShrink: 0,
             }}
           >
             {user.name[0]?.toUpperCase()}
           </div>
-          <div style={{ minWidth: 0 }}>
-            <div style={{ fontWeight: 600, fontSize: 13, lineHeight: 1.2 }}>{user.name}</div>
-            <div className="tiny muted t-mono" style={{ fontSize: 10 }}>
+          <div style={{ minWidth: 0, flex: 1 }}>
+            <div
+              style={{
+                fontWeight: 600,
+                fontSize: 13,
+                lineHeight: 1.2,
+                color: 'var(--ink-deep)',
+              }}
+            >
+              {user.name}
+            </div>
+            <div
+              className="t-mono"
+              style={{ fontSize: 10, color: 'var(--ink-mute)', marginTop: 2 }}
+            >
               L{user.level} · {user.streak}d 🔥
             </div>
           </div>
@@ -65,7 +97,9 @@ export function Sidebar({ user }: Props) {
         <div className="progress" style={{ height: 4 }}>
           <div
             className="progress-fill"
-            style={{ width: `${Math.min(100, (user.xp / Math.max(1, user.xpForNext)) * 100)}%` }}
+            style={{
+              width: `${Math.min(100, (user.xp / Math.max(1, user.xpForNext)) * 100)}%`,
+            }}
           />
         </div>
       </div>
@@ -73,8 +107,6 @@ export function Sidebar({ user }: Props) {
   );
 }
 
-// useLinkStatus must be rendered as a descendant of the Link it observes.
-// Renders a small accent dot while navigation is in flight.
 function NavPending() {
   const { pending } = useLinkStatus();
   if (!pending) return null;
@@ -88,7 +120,7 @@ function NavPending() {
         borderRadius: 999,
         background: 'currentColor',
         opacity: 0.6,
-        animation: 'flicker 1s ease-in-out infinite',
+        animation: 'pop-in 0.5s ease-in-out infinite alternate',
       }}
     />
   );

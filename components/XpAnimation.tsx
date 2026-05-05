@@ -28,16 +28,16 @@ export function XpAnimation({ target }: { target: number }) {
           alignItems: 'center',
           gap: 10,
           padding: '8px 18px',
-          border: '1px solid var(--accent)',
-          background: 'var(--accent-tint)',
+          background: 'var(--ink-deep)',
           borderRadius: 999,
-          color: 'var(--accent-deep)',
+          color: 'var(--finesse-yellow)',
           fontFamily: 'var(--font-mono)',
-          fontWeight: 600,
-          fontSize: 16,
+          fontWeight: 700,
+          fontSize: 14,
+          letterSpacing: '0.05em',
         }}
       >
-        <Icon name="sparkles" size={16} />+{n} XP
+        <Icon name="sparkles" size={14} stroke={2.4} />+{n} XP
       </div>
     </div>
   );

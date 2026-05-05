@@ -7,15 +7,26 @@ export default async function BadgesPage() {
   const earnedCount = badges.filter((b) => b.earned_at).length;
   return (
     <div className="rise">
-      <h1 className="page-title" style={{ fontSize: 32, margin: '0 0 4px' }}>
-        <span className="h-display" style={{ color: 'var(--accent-deep)' }}>
-          {earnedCount}
-        </span>{' '}
-        of {badges.length} earned.
-      </h1>
-      <p className="lede">
-        Little markers along the way. Not the point — but nice when they show up.
-      </p>
+      <div className="page-wash">
+        <div className="page-wash-inner">
+          <div className="page-header">
+            <div>
+              <div className="notation-tag" style={{ marginBottom: 14 }}>
+                BADGES
+              </div>
+              <h1 className="page-title">
+                {earnedCount} of {badges.length} earned.
+              </h1>
+              <p className="page-subtitle">
+                Little markers along the way. Not the point — but nice when they show up.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="page-body">
+        <div className="page-body-inner">
       <div
         style={{
           display: 'grid',
@@ -38,6 +49,8 @@ export default async function BadgesPage() {
             </div>
           );
         })}
+      </div>
+        </div>
       </div>
     </div>
   );

@@ -25,11 +25,9 @@ export default async function DashboardPage() {
   const todayDate = new Date();
   const calendar = getMonthCalendar(user.id, todayDate.getFullYear(), todayDate.getMonth());
   const monthName = todayDate.toLocaleString('en-US', { month: 'long' });
-  const dayHeader = todayDate.toLocaleDateString('en-US', {
-    weekday: 'long',
-    month: 'long',
-    day: 'numeric',
-  });
+  const dateTag = todayDate
+    .toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
+    .toUpperCase();
 
   const xpPct =
     stats.xpForNextLevel > 0
@@ -38,302 +36,436 @@ export default async function DashboardPage() {
   const checkedIn = !!today;
   const todayMoodIdx = today ? today.mood - 1 : null;
 
-  // Day 1 / no-history: collapse to a single invitation card. The metrics
-  // grid only earns its space once there's data to show.
-  if (stats.daysActive === 0 && !checkedIn) {
-    return (
-      <div className="rise" style={{ maxWidth: 540, margin: '0 auto', paddingTop: 48 }}>
-        <div className="t-eyebrow" style={{ marginBottom: 8 }}>
-          {dayHeader}
-        </div>
-        <h1
-          className="page-title"
-          style={{ fontSize: 36, margin: '0 0 14px' }}
-        >
-          {timeOfDayGreeting()},{' '}
-          <span className="h-display" style={{ color: 'var(--accent-deep)' }}>
-            {user.name}
-          </span>
-          .
-        </h1>
-        <p className="lede" style={{ marginBottom: 32 }}>
-          First day in. Take five minutes when you&rsquo;re ready — one mood, your
-          habits, a single line of reflection.
-        </p>
-        <Link href="/checkin" className="btn btn-primary btn-lg btn-block">
-          Begin first check-in <Icon name="arrow-right" size={16} />
-        </Link>
-        <p className="tiny faint" style={{ marginTop: 20, textAlign: 'center' }}>
-          Streak, XP, calendar, and patterns appear as you build a record.
-        </p>
-      </div>
-    );
-  }
+  const subtitle = checkedIn
+    ? "Checked in. Streak's safe."
+    : stats.daysActive === 0
+    ? 'First day. Start with one small thing.'
+    : "Five minutes when you're ready.";
+
+  const aiMessage =
+    today?.ai_message ?? defaultGreeting(stats.daysActive, user.name);
 
   return (
     <div className="rise">
-      <div className="row between" style={{ marginBottom: 22, alignItems: 'flex-end' }}>
-        <div>
-          <div className="t-eyebrow" style={{ marginBottom: 6 }}>
-            {dayHeader}
-          </div>
-          <h1
-            className="page-title"
-            style={{ fontSize: 32, margin: 0 }}
-          >
-            {timeOfDayGreeting()},{' '}
-            <span className="h-display" style={{ color: 'var(--accent-deep)' }}>
-              {user.name}
-            </span>
-            .
-          </h1>
-        </div>
-        <div className="row gap-8">
-          <Link href="/chat" className="btn btn-ghost">
-            <Icon name="message" size={16} /> Chat
-          </Link>
-          {checkedIn ? (
-            <button className="btn btn-ghost" disabled>
-              <Icon name="check" size={16} /> Checked in today
-            </button>
-          ) : (
-            <Link href="/checkin" className="btn btn-primary btn-lg">
-              Begin check-in <Icon name="arrow-right" size={16} />
-            </Link>
-          )}
-        </div>
-      </div>
-
-      {/* TOP ROW: streak | xp | mood */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: '1.1fr 1.1fr 1fr',
-          gap: 16,
-          marginBottom: 16,
-        }}
-      >
-        <div className="card">
-          <div className="row between" style={{ marginBottom: 12 }}>
-            <span className="t-eyebrow">Current streak</span>
-            <span className="tiny muted">Longest · {stats.longestStreak}d</span>
-          </div>
-          <div className="row gap-16" style={{ alignItems: 'flex-end' }}>
-            <div className="flicker">
-              <FlameStamp size={64} />
-            </div>
+      <div className="page-wash">
+        <div className="page-wash-inner">
+          <div className="page-header">
             <div>
-              <div className="stat-num">
-                {stats.currentStreak}
-                <span style={{ fontSize: 20, color: 'var(--ink-mute)', marginLeft: 4 }}>days</span>
+              <div className="notation-tag" style={{ marginBottom: 14 }}>
+                {dateTag}
               </div>
-              <div className="tiny muted" style={{ marginTop: 2 }}>
-                {stats.currentStreak === 0
-                  ? 'Start one today'
-                  : stats.currentStreak < 7
-                  ? 'Keep the kindling going'
-                  : stats.currentStreak < 21
-                  ? 'Real momentum now'
-                  : 'A practice, honestly.'}
-              </div>
+              <h1 className="page-title">
+                {timeOfDayGreeting()}, {user.name}.
+              </h1>
+              <p className="page-subtitle">{subtitle}</p>
             </div>
-          </div>
-        </div>
-
-        <div className="card card-warm">
-          <div className="row between" style={{ marginBottom: 12 }}>
-            <span className="t-eyebrow">Level {stats.level}</span>
-            <span className="tiny muted t-mono">{stats.totalXp} XP total</span>
-          </div>
-          <div className="row between" style={{ alignItems: 'baseline', marginBottom: 10 }}>
-            <div>
-              <span className="stat-num stat-num-sm">{stats.xpInLevel}</span>
-              <span className="t-mono muted" style={{ fontSize: 14, marginLeft: 6 }}>
-                / {stats.xpForNextLevel}
-              </span>
-            </div>
-            <div className="tiny muted">
-              {stats.xpForNextLevel - stats.xpInLevel} to L{stats.level + 1}
-            </div>
-          </div>
-          <div className="progress">
-            <div className="progress-fill" style={{ width: `${xpPct}%` }} />
-          </div>
-          <div className="tiny muted" style={{ marginTop: 10 }}>
-            +10 daily · +5 all habits · +3 reflection · +2 mood
-          </div>
-        </div>
-
-        <div className="card">
-          <div className="row between" style={{ marginBottom: 12 }}>
-            <span className="t-eyebrow">Mood · 7 days</span>
-            <Link
-              href="/mood"
-              className="tiny"
-              style={{ color: 'var(--accent-deep)', cursor: 'pointer' }}
+            <div
+              className="col gap-12"
+              style={{ alignItems: 'flex-end', flexShrink: 0 }}
             >
-              {today ? 'Update' : 'Log today'}
-            </Link>
-          </div>
-          <div className="row gap-8" style={{ marginBottom: 12 }}>
-            {todayMoodIdx !== null ? (
-              <>
-                <div style={{ fontSize: 32 }}>{MOOD_FACES[todayMoodIdx]}</div>
-                <div>
-                  <div style={{ fontWeight: 600 }}>{MOOD_LABELS[todayMoodIdx]}</div>
-                  <div className="tiny muted">today</div>
-                </div>
-              </>
-            ) : (
-              <div style={{ fontSize: 13, color: 'var(--ink-mute)' }}>Not logged yet today</div>
-            )}
-          </div>
-          <div className="row gap-4 between" style={{ alignItems: 'flex-end' }}>
-            {moods.map((m, i) => (
-              <div key={m.date} style={{ flex: 1, textAlign: 'center' }}>
-                <div
-                  style={{
-                    height: 8 + m.mood * 6,
-                    background:
-                      i === moods.length - 1 && m.mood > 0
-                        ? 'var(--accent)'
-                        : m.mood === 0
-                        ? 'var(--line)'
-                        : 'var(--ink-faint)',
-                    borderRadius: 3,
-                    marginBottom: 4,
-                  }}
-                />
-                <div className="tiny faint t-mono" style={{ fontSize: 9 }}>
-                  {['S', 'M', 'T', 'W', 'T', 'F', 'S'][new Date(`${m.date}T00:00:00`).getDay()]}
-                </div>
-              </div>
-            ))}
+              {checkedIn ? (
+                <button className="btn btn-secondary" disabled>
+                  <Icon name="check" size={14} /> Done today
+                </button>
+              ) : (
+                <Link href="/checkin" className="btn btn-primary btn-lg">
+                  Begin check-in <Icon name="arrow-right" size={14} />
+                </Link>
+              )}
+              <Link href="/chat" className="btn btn-ghost btn-sm">
+                <Icon name="message" size={14} /> Talk to companion
+              </Link>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* MIDDLE ROW: AI suggestion + habits */}
-      <div
-        style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: 16, marginBottom: 16 }}
-      >
-        <div
-          className="card"
-          style={{
-            background: 'var(--accent-tint)',
-            border: '1px solid var(--accent-soft)',
-            position: 'relative',
-          }}
-        >
-          <div className="row between" style={{ marginBottom: 14 }}>
-            <span className="t-eyebrow row gap-6">
-              <Icon name="sparkles" size={12} /> A note for you
-            </span>
-          </div>
-          <p
-            className="h-display"
+      <div className="page-body">
+        <div className="page-body-inner">
+          {/* 4-stat metrics */}
+          <div
             style={{
-              fontSize: 22,
-              lineHeight: 1.45,
-              margin: '0 0 18px',
-              color: 'var(--ink)',
-              maxWidth: 560,
+              display: 'grid',
+              gridTemplateColumns: 'repeat(4, 1fr)',
+              gap: 12,
+              marginBottom: 12,
             }}
           >
-            &ldquo;{today?.ai_message ?? defaultGreeting(stats.daysActive, user.name)}&rdquo;
-          </p>
-          <div className="row between">
-            <span className="tiny muted">— your companion</span>
-            <Link href="/chat" className="tiny" style={{ color: 'var(--accent-deep)' }}>
-              Open chat →
-            </Link>
-          </div>
-        </div>
+            <div className="card">
+              <div className="t-eyebrow" style={{ marginBottom: 12 }}>
+                Streak
+              </div>
+              <div className="row gap-12" style={{ alignItems: 'center' }}>
+                <FlameStamp size={44} />
+                <div>
+                  <div className="stat-num" style={{ fontSize: 30 }}>
+                    {stats.currentStreak}
+                    <span
+                      style={{
+                        fontSize: 13,
+                        color: 'var(--ink-mute)',
+                        marginLeft: 4,
+                        fontFamily: 'var(--font-sans)',
+                        fontWeight: 500,
+                      }}
+                    >
+                      d
+                    </span>
+                  </div>
+                  <div className="tiny muted t-mono" style={{ marginTop: 2 }}>
+                    BEST · {stats.longestStreak}d
+                  </div>
+                </div>
+              </div>
+            </div>
 
-        <div className="card">
-          <div className="t-eyebrow" style={{ marginBottom: 14 }}>
-            Habits in play
-          </div>
-          <div className="col gap-8">
-            {habits.length === 0 && (
-              <div className="muted tiny">No active habits — add some in settings.</div>
-            )}
-            {habits.map((h, i) => (
+            <div className="card">
+              <div className="row between" style={{ marginBottom: 12 }}>
+                <span className="t-eyebrow">Level</span>
+                <span
+                  className="chip chip-soft chip-ink"
+                  style={{ padding: '2px 8px', fontSize: 10 }}
+                >
+                  L{stats.level}
+                </span>
+              </div>
               <div
-                key={h.id}
                 className="row between"
-                style={{
-                  padding: '10px 12px',
-                  borderRadius: 9,
-                  background: i % 2 === 0 ? 'var(--paper-warm)' : 'transparent',
-                }}
+                style={{ alignItems: 'baseline', marginBottom: 8 }}
               >
-                <div className="row gap-12">
-                  <div
+                <div className="stat-num" style={{ fontSize: 30 }}>
+                  {stats.xpInLevel}
+                  <span
+                    className="t-mono"
                     style={{
-                      width: 28,
-                      height: 28,
-                      borderRadius: 7,
-                      background: 'var(--canvas)',
-                      display: 'grid',
-                      placeItems: 'center',
-                      color: 'var(--accent-deep)',
+                      fontSize: 13,
+                      color: 'var(--ink-mute)',
+                      fontWeight: 400,
                     }}
                   >
-                    <Icon name="leaf" size={14} />
-                  </div>
-                  <div style={{ fontSize: 14, fontWeight: 500 }}>{h.name}</div>
+                    /{stats.xpForNextLevel}
+                  </span>
                 </div>
-                <div className="t-mono tiny muted">{checkedIn ? '✓' : '—'}</div>
               </div>
-            ))}
-          </div>
-        </div>
-      </div>
+              <div className="progress" style={{ height: 6 }}>
+                <div className="progress-fill" style={{ width: `${xpPct}%` }} />
+              </div>
+              <div className="tiny muted t-mono" style={{ marginTop: 8 }}>
+                {stats.xpForNextLevel - stats.xpInLevel} XP TO L{stats.level + 1}
+              </div>
+            </div>
 
-      {/* CALENDAR */}
-      <div className="card">
-        <div className="row between" style={{ marginBottom: 18 }}>
-          <div>
-            <div className="t-eyebrow">Calendar</div>
-            <div style={{ fontSize: 18, fontWeight: 600, marginTop: 4 }}>
-              {monthName} {todayDate.getFullYear()}
+            <div className="card">
+              <div className="row between" style={{ marginBottom: 12 }}>
+                <span className="t-eyebrow">Mood today</span>
+                <Link
+                  href="/mood"
+                  className="tiny"
+                  style={{ color: 'var(--accent-deep)', fontWeight: 600 }}
+                >
+                  {today ? 'Update' : 'Log'}
+                </Link>
+              </div>
+              {todayMoodIdx !== null ? (
+                <div className="row gap-12" style={{ alignItems: 'center' }}>
+                  <div style={{ fontSize: 36 }}>{MOOD_FACES[todayMoodIdx]}</div>
+                  <div>
+                    <div style={{ fontWeight: 600, fontSize: 16, color: 'var(--ink-deep)' }}>
+                      {MOOD_LABELS[todayMoodIdx]}
+                    </div>
+                    <div className="tiny muted t-mono">RIGHT NOW</div>
+                  </div>
+                </div>
+              ) : (
+                <div
+                  style={{ fontSize: 13, color: 'var(--ink-mute)', padding: '8px 0' }}
+                >
+                  Not logged yet
+                </div>
+              )}
+            </div>
+
+            <div className="card">
+              <div className="t-eyebrow" style={{ marginBottom: 12 }}>
+                Mood · 7d
+              </div>
+              <div
+                className="row gap-4 between"
+                style={{ alignItems: 'flex-end', height: 44 }}
+              >
+                {moods.map((m, i) => (
+                  <div key={m.date} style={{ flex: 1, textAlign: 'center' }}>
+                    <div
+                      style={{
+                        height: m.mood > 0 ? 6 + m.mood * 8 : 4,
+                        background:
+                          i === moods.length - 1 && m.mood > 0
+                            ? 'var(--ink-deep)'
+                            : m.mood > 0
+                            ? 'var(--ink-faint)'
+                            : 'var(--line)',
+                        borderRadius: 2,
+                        margin: '0 1px',
+                      }}
+                    />
+                  </div>
+                ))}
+              </div>
+              <div className="row between" style={{ marginTop: 8 }}>
+                {moods.map((m, i) => (
+                  <div
+                    key={m.date}
+                    className="tiny faint t-mono"
+                    style={{ flex: 1, textAlign: 'center', fontSize: 9 }}
+                  >
+                    {['S', 'M', 'T', 'W', 'T', 'F', 'S'][new Date(`${m.date}T00:00:00`).getDay()]}
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
-          <div className="row gap-12 tiny muted">
-            <Legend color="var(--sage-soft)" label="Done" />
-            <Legend color="var(--ochre-soft)" label="Partial" />
-            <Legend color="var(--miss)" label="Missed" />
-            <Legend color="var(--accent)" label="Today" />
+
+          {/* AI ink card + habits */}
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: '1.4fr 1fr',
+              gap: 12,
+              marginBottom: 12,
+            }}
+          >
+            <div
+              className="card"
+              style={{
+                background: 'var(--ink-deep)',
+                color: 'var(--paper)',
+                borderColor: 'var(--ink-deep)',
+                position: 'relative',
+                overflow: 'hidden',
+              }}
+            >
+              <div
+                aria-hidden
+                style={{
+                  position: 'absolute',
+                  right: -60,
+                  top: -60,
+                  width: 200,
+                  height: 200,
+                  borderRadius: '50%',
+                  background: 'var(--finesse-yellow)',
+                  opacity: 0.18,
+                }}
+              />
+              <div
+                className="row between"
+                style={{ marginBottom: 16, position: 'relative' }}
+              >
+                <span
+                  className="t-eyebrow"
+                  style={{ color: 'var(--finesse-yellow)' }}
+                >
+                  <Icon name="sparkles" size={11} stroke={2} /> COMPANION NOTE
+                </span>
+              </div>
+              <p
+                style={{
+                  fontSize: 19,
+                  lineHeight: 1.45,
+                  margin: '0 0 22px',
+                  fontFamily: 'var(--font-sans)',
+                  fontWeight: 600,
+                  letterSpacing: '-0.015em',
+                  position: 'relative',
+                }}
+              >
+                &ldquo;{aiMessage}&rdquo;
+              </p>
+              <div className="row between" style={{ position: 'relative' }}>
+                <span
+                  className="tiny t-mono"
+                  style={{ color: 'rgba(255,255,255,0.5)' }}
+                >
+                  — LICHEN AI
+                </span>
+                <Link
+                  href="/chat"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    fontFamily: 'var(--font-sans)',
+                    fontSize: 12,
+                    fontWeight: 700,
+                    color: 'var(--ink-deep)',
+                    background: 'var(--finesse-yellow)',
+                    padding: '6px 10px 6px 14px',
+                    borderRadius: 999,
+                  }}
+                >
+                  Open chat
+                  <span
+                    style={{
+                      width: 18,
+                      height: 18,
+                      borderRadius: '50%',
+                      background: 'var(--ink-deep)',
+                      color: 'var(--finesse-yellow)',
+                      display: 'grid',
+                      placeItems: 'center',
+                    }}
+                  >
+                    <Icon name="arrow-right" size={10} stroke={2.4} />
+                  </span>
+                </Link>
+              </div>
+            </div>
+
+            <div className="card">
+              <div className="t-eyebrow" style={{ marginBottom: 14 }}>
+                Today&rsquo;s habits
+              </div>
+              <div className="col gap-6">
+                {habits.length === 0 && (
+                  <div className="muted tiny" style={{ padding: '8px 0' }}>
+                    No active habits.
+                  </div>
+                )}
+                {habits.map((h) => (
+                  <div
+                    key={h.id}
+                    className="row between"
+                    style={{
+                      padding: '10px 12px',
+                      borderRadius: 'var(--radius-sm)',
+                      background: 'var(--paper-warm)',
+                      border: '1px solid var(--line)',
+                    }}
+                  >
+                    <div className="row gap-10">
+                      <div
+                        style={{
+                          width: 26,
+                          height: 26,
+                          borderRadius: 'var(--radius-sm)',
+                          background: 'var(--accent-soft)',
+                          display: 'grid',
+                          placeItems: 'center',
+                          color: 'var(--accent-deep)',
+                        }}
+                      >
+                        <Icon name="leaf" size={13} />
+                      </div>
+                      <div
+                        style={{
+                          fontSize: 13,
+                          fontWeight: 500,
+                          color: 'var(--ink-deep)',
+                        }}
+                      >
+                        {h.name}
+                      </div>
+                    </div>
+                    <div
+                      style={{
+                        width: 18,
+                        height: 18,
+                        borderRadius: 4,
+                        background: checkedIn ? 'var(--good)' : 'transparent',
+                        border: checkedIn ? 'none' : '1.5px solid var(--line-strong)',
+                        display: 'grid',
+                        placeItems: 'center',
+                        color: 'white',
+                      }}
+                    >
+                      {checkedIn && <Icon name="check" size={12} stroke={3} />}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
-        </div>
-        <div className="cal-grid" style={{ marginBottom: 6 }}>
-          {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, i) => (
-            <div
-              key={i}
-              className="t-eyebrow"
-              style={{ textAlign: 'center', fontSize: 10, padding: '4px 0' }}
-            >
-              {d}
+
+          {/* Calendar */}
+          <div className="card">
+            <div className="row between" style={{ marginBottom: 18 }}>
+              <div>
+                <div className="t-eyebrow">Calendar</div>
+                <div className="h-display" style={{ fontSize: 18, marginTop: 4 }}>
+                  {monthName} {todayDate.getFullYear()}
+                </div>
+              </div>
+              <div
+                className="row gap-12 tiny muted t-mono"
+                style={{ fontSize: 10 }}
+              >
+                <Legend swatch={{ background: 'var(--ink-deep)' }} label="DONE" />
+                <Legend
+                  swatch={{
+                    background: 'var(--paper)',
+                    border: '1px solid var(--ink-deep)',
+                  }}
+                  label="PARTIAL"
+                />
+                <Legend
+                  swatch={{
+                    background: 'var(--paper-warm)',
+                    border: '1px solid var(--line)',
+                  }}
+                  label="MISSED"
+                />
+                <Legend
+                  swatch={{ background: 'var(--finesse-yellow)' }}
+                  label="TODAY"
+                />
+              </div>
             </div>
-          ))}
-        </div>
-        <div className="cal-grid">
-          {calendar.map((c, i) => (
-            <div
-              key={i}
-              className={`cal-cell ${c.status === 'empty' ? 'cal-cell-empty' : `cal-cell-${c.status}`}`}
-            >
-              {c.day || ''}
+            <div className="cal-grid" style={{ marginBottom: 6 }}>
+              {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, i) => (
+                <div
+                  key={i}
+                  className="t-eyebrow"
+                  style={{ textAlign: 'center', fontSize: 10, padding: '4px 0' }}
+                >
+                  {d}
+                </div>
+              ))}
             </div>
-          ))}
+            <div className="cal-grid">
+              {calendar.map((c, i) => {
+                const cls =
+                  c.status === 'empty'
+                    ? 'cal-cell-empty'
+                    : c.status === 'today'
+                    ? 'cal-cell-today'
+                    : c.status === 'done'
+                    ? 'cal-cell-done'
+                    : c.status === 'partial'
+                    ? 'cal-cell-partial'
+                    : c.status === 'miss'
+                    ? 'cal-cell-missed'
+                    : '';
+                return (
+                  <div key={i} className={`cal-cell ${cls}`}>
+                    {c.day || ''}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
         </div>
       </div>
     </div>
   );
 }
 
-function Legend({ color, label }: { color: string; label: string }) {
+function Legend({
+  swatch,
+  label,
+}: {
+  swatch: React.CSSProperties;
+  label: string;
+}) {
   return (
     <span className="row gap-6">
       <span
@@ -341,8 +473,8 @@ function Legend({ color, label }: { color: string; label: string }) {
           width: 10,
           height: 10,
           borderRadius: 3,
-          background: color,
           display: 'inline-block',
+          ...swatch,
         }}
       />
       {label}
@@ -351,8 +483,8 @@ function Legend({ color, label }: { color: string; label: string }) {
 }
 
 function defaultGreeting(daysActive: number, name: string): string {
-  if (daysActive === 0) return `Welcome in, ${name}. Whenever you're ready, take five minutes.`;
+  if (daysActive === 0)
+    return `Welcome in, ${name}. Whenever you're ready, take five minutes.`;
   if (daysActive < 7) return 'Early days. The shape of a practice is just a few minutes a day.';
   return 'You keep showing up. That is the entire game.';
 }
-

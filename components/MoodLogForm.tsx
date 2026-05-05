@@ -33,7 +33,7 @@ export function MoodLogForm() {
   }
 
   return (
-    <div className="card" style={{ padding: 28 }}>
+    <div className="card" style={{ padding: 24 }}>
       <div className="t-eyebrow" style={{ marginBottom: 16 }}>
         Right now
       </div>
@@ -43,7 +43,7 @@ export function MoodLogForm() {
             key={i}
             className={`mood-face ${mood === i + 1 ? 'mood-face-selected' : ''}`}
             onClick={() => setMood(i + 1)}
-            style={{ width: 60, height: 60, fontSize: 28 }}
+            style={{ width: 56, height: 56, fontSize: 26 }}
           >
             {f}
           </button>

@@ -99,15 +99,14 @@ export function OnboardingFlow({ userName }: { userName: string }) {
     const s = introSlides[step];
     return (
       <div className="onboard-card rise" key={step}>
-        <div className="t-eyebrow" style={{ marginBottom: 18 }}>
-          {s.eyebrow}
+        <div className="notation-tag" style={{ marginBottom: 18 }}>
+          {s.eyebrow.toUpperCase()}
         </div>
         <h1
+          className="h-display"
           style={{
             fontSize: 34,
             lineHeight: 1.15,
-            fontWeight: 600,
-            letterSpacing: '-0.02em',
             margin: '0 0 18px',
           }}
         >
@@ -143,15 +142,15 @@ export function OnboardingFlow({ userName }: { userName: string }) {
   return (
     <div className="onboard-card rise" key={q} style={{ maxWidth: 580 }}>
       <div className="row between" style={{ marginBottom: 24 }}>
-        <span className="t-eyebrow">
-          Question {q + 1} of 4
+        <span className="notation-tag">
+          Q{q + 1} / 4
         </span>
         <div className="dot-row">
           {[0, 1, 2, 3].map((i) => (
             <span
               key={i}
               className={`dot ${i === q ? 'dot-active' : ''}`}
-              style={{ background: i <= q ? 'var(--ink)' : 'var(--line)' }}
+              style={{ background: i <= q ? 'var(--ink-deep)' : 'var(--line-strong)' }}
             />
           ))}
         </div>

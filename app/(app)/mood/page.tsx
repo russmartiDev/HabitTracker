@@ -45,20 +45,27 @@ export default async function MoodPage() {
 
   return (
     <div className="rise">
-      <h1 className="page-title" style={{ fontSize: 32, margin: '0 0 4px' }}>
-        How are you,{' '}
-        <span className="h-display" style={{ color: 'var(--accent-deep)' }}>
-          now
-        </span>
-        ?
-      </h1>
-      <p className="lede">
-        {moodValues.length > 0
-          ? `${avg} average across ${moodValues.length} day${moodValues.length === 1 ? '' : 's'}.`
-          : 'Up to five times a day. The patterns matter more than any single one.'}
-      </p>
+      <div className="page-wash">
+        <div className="page-wash-inner">
+          <div className="page-header">
+            <div>
+              <div className="notation-tag" style={{ marginBottom: 14 }}>
+                MOOD LOG
+              </div>
+              <h1 className="page-title">How are you, now?</h1>
+              <p className="page-subtitle">
+                {moodValues.length > 0
+                  ? `${avg} average across ${moodValues.length} day${moodValues.length === 1 ? '' : 's'} logged.`
+                  : 'Up to five times a day. The patterns matter more than any single one.'}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: 16 }}>
+      <div className="page-body">
+        <div className="page-body-inner">
+          <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: 16 }}>
         <MoodLogForm />
 
         <div className="card">
@@ -82,24 +89,25 @@ export default async function MoodPage() {
                   borderRadius: 5,
                   background:
                     c.mood == null
-                      ? 'var(--miss)'
+                      ? 'var(--paper-warm)'
                       : c.mood < 1.5
-                      ? 'oklch(0.78 0.07 30)'
+                      ? 'var(--error-soft)'
                       : c.mood < 2.5
-                      ? 'oklch(0.84 0.06 50)'
+                      ? 'var(--warn-soft)'
                       : c.mood < 3.5
-                      ? 'oklch(0.88 0.05 80)'
+                      ? 'var(--accent-soft)'
                       : c.mood < 4.5
-                      ? 'oklch(0.85 0.07 130)'
-                      : 'oklch(0.78 0.10 145)',
+                      ? 'var(--info-soft)'
+                      : 'var(--good-soft)',
+                  border: c.mood == null ? '1px solid var(--line)' : 'none',
                   opacity: c.mood == null ? 0.4 : 1,
                 }}
               />
             ))}
           </div>
-          <div className="row between tiny muted" style={{ marginBottom: 22 }}>
-            <span>30d ago</span>
-            <span>today</span>
+          <div className="row between tiny muted t-mono" style={{ marginBottom: 22, fontSize: 10 }}>
+            <span>30D AGO</span>
+            <span>TODAY</span>
           </div>
 
           <div className="t-eyebrow" style={{ marginBottom: 8 }}>
@@ -107,9 +115,11 @@ export default async function MoodPage() {
           </div>
           <div className="row gap-12" style={{ alignItems: 'baseline' }}>
             <div className="stat-num stat-num-sm">{avg}</div>
-            <div className="tiny muted">
-              {moodValues.length} day{moodValues.length === 1 ? '' : 's'} logged
+            <div className="tiny muted t-mono">
+              {moodValues.length} DAY{moodValues.length === 1 ? '' : 'S'} LOGGED
             </div>
+          </div>
+        </div>
           </div>
         </div>
       </div>

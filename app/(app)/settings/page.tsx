@@ -10,17 +10,24 @@ export default async function SettingsPage() {
   const habits = getActiveHabits(user.id);
 
   return (
-    <div className="rise" style={{ maxWidth: 720 }}>
-      <h1 className="page-title" style={{ fontSize: 32, margin: '0 0 4px' }}>
-        Your{' '}
-        <span className="h-display" style={{ color: 'var(--accent-deep)' }}>
-          profile
-        </span>
-        .
-      </h1>
-      <p className="lede">{user.email}</p>
+    <div className="rise">
+      <div className="page-wash">
+        <div className="page-wash-inner">
+          <div className="page-header">
+            <div>
+              <div className="notation-tag" style={{ marginBottom: 14 }}>
+                SETTINGS
+              </div>
+              <h1 className="page-title">Your profile.</h1>
+              <p className="page-subtitle">{user.email}</p>
+            </div>
+          </div>
+        </div>
+      </div>
 
-      <section style={{ marginTop: 32, marginBottom: 40 }}>
+      <div className="page-body">
+        <div className="page-body-inner" style={{ maxWidth: 720 }}>
+      <section style={{ marginBottom: 40 }}>
         <div className="t-eyebrow" style={{ marginBottom: 16 }}>
           Profile
         </div>
@@ -73,9 +80,9 @@ export default async function SettingsPage() {
 
       <div
         className="card"
-        style={{ borderColor: 'oklch(0.85 0.06 30)', background: 'transparent' }}
+        style={{ borderColor: 'var(--error)', background: 'var(--error-soft)' }}
       >
-        <div className="t-eyebrow" style={{ marginBottom: 8, color: 'var(--accent-deep)' }}>
+        <div className="t-eyebrow" style={{ marginBottom: 8, color: 'var(--error)' }}>
           Danger zone
         </div>
         <p className="muted" style={{ margin: '0 0 14px', fontSize: 14 }}>
@@ -83,6 +90,8 @@ export default async function SettingsPage() {
           habits stay.
         </p>
         <ResetDataButton />
+      </div>
+        </div>
       </div>
     </div>
   );

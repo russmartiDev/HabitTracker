@@ -1,29 +1,47 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { ACCENT_NAMES, applyTheme, readPrefs, type AccentName, type ThemeName } from './ThemeApplier';
+import { useEffect, useState, useTransition } from 'react';
+import { useRouter } from 'next/navigation';
+import { applyTheme, readTheme, type ThemeName } from './ThemeApplier';
 
 export function TweaksPanel() {
   const [open, setOpen] = useState(false);
   const [theme, setTheme] = useState<ThemeName>('warm');
-  const [accent, setAccent] = useState<AccentName>('terracotta');
+  const [isPending, startTransition] = useTransition();
+  const router = useRouter();
 
   useEffect(() => {
-    const p = readPrefs();
-    setTheme(p.theme);
-    setAccent(p.accent);
+    setTheme(readTheme());
   }, []);
-
-  function pickAccent(a: AccentName) {
-    setAccent(a);
-    localStorage.setItem('lichen.accent', a);
-    applyTheme(theme, a);
-  }
 
   function pickTheme(t: ThemeName) {
     setTheme(t);
     localStorage.setItem('lichen.theme', t);
-    applyTheme(t, accent);
+    applyTheme(t);
+  }
+
+  async function impersonate(email: string) {
+    // Use the credentials sign-in flow with redirect to repaint cleanly.
+    startTransition(async () => {
+      // Sign out current session, then re-sign in with the demo cred.
+      await fetch('/api/auth/signout', { method: 'POST' }).catch(() => {});
+      const csrfRes = await fetch('/api/auth/csrf');
+      const { csrfToken } = await csrfRes.json();
+      const body = new URLSearchParams({
+        csrfToken,
+        email,
+        password: 'demo',
+        callbackUrl: '/dashboard',
+      });
+      await fetch('/api/auth/callback/credentials', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body,
+        redirect: 'manual',
+      });
+      router.push('/dashboard');
+      router.refresh();
+    });
   }
 
   return (
@@ -43,33 +61,18 @@ export function TweaksPanel() {
           style={{
             padding: 14,
             marginBottom: 8,
-            width: 240,
+            width: 260,
             borderColor: 'var(--ink-soft)',
-            background: 'var(--paper-warm)',
           }}
         >
           <div className="t-eyebrow" style={{ marginBottom: 10 }}>
             Tweaks (dev)
           </div>
 
-          <div style={{ marginBottom: 12 }}>
-            <div className="t-label" style={{ marginBottom: 6 }}>Accent</div>
-            <div className="row gap-6 wrap">
-              {ACCENT_NAMES.map((a) => (
-                <button
-                  key={a}
-                  onClick={() => pickAccent(a)}
-                  className={`chip ${accent === a ? 'chip-active' : ''}`}
-                  style={{ textTransform: 'capitalize' }}
-                >
-                  {a}
-                </button>
-              ))}
+          <div style={{ marginBottom: 14 }}>
+            <div className="t-label" style={{ marginBottom: 6 }}>
+              Theme
             </div>
-          </div>
-
-          <div style={{ marginBottom: 12 }}>
-            <div className="t-label" style={{ marginBottom: 6 }}>Theme</div>
             <div className="row gap-6 wrap">
               {(['warm', 'evening'] as ThemeName[]).map((t) => (
                 <button
@@ -78,26 +81,65 @@ export function TweaksPanel() {
                   className={`chip ${theme === t ? 'chip-active' : ''}`}
                   style={{ textTransform: 'capitalize' }}
                 >
-                  {t}
+                  {t === 'warm' ? 'Warm' : 'Evening'}
                 </button>
               ))}
             </div>
           </div>
 
-          <div className="tiny faint">
-            Demo accounts: <br />
-            demo-fresh / demo-mid / demo-power<br />
-            password: <code>demo</code>
+          <div style={{ marginBottom: 14 }}>
+            <div className="t-label" style={{ marginBottom: 6 }}>
+              Demo user
+            </div>
+            <div className="col gap-6">
+              {[
+                { email: 'demo-fresh@lichen.local', label: 'Day 1 (fresh)' },
+                { email: 'demo-mid@lichen.local', label: 'Day 12 (mid)' },
+                { email: 'demo-power@lichen.local', label: 'Day 60 (power)' },
+              ].map((u) => (
+                <button
+                  key={u.email}
+                  onClick={() => impersonate(u.email)}
+                  className="btn btn-ghost btn-sm"
+                  style={{ justifyContent: 'flex-start', fontSize: 11 }}
+                  disabled={isPending}
+                >
+                  {u.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <div className="t-label" style={{ marginBottom: 6 }}>
+              Jump
+            </div>
+            <div className="col gap-6">
+              <button
+                onClick={() => router.push('/checkin')}
+                className="btn btn-ghost btn-sm"
+                style={{ justifyContent: 'flex-start', fontSize: 11 }}
+              >
+                Begin check-in
+              </button>
+              <button
+                onClick={() => router.push('/onboarding')}
+                className="btn btn-ghost btn-sm"
+                style={{ justifyContent: 'flex-start', fontSize: 11 }}
+              >
+                Re-run onboarding
+              </button>
+            </div>
           </div>
         </div>
       )}
 
       <button
         onClick={() => setOpen((o) => !o)}
-        className="btn btn-ghost"
-        style={{ padding: '8px 12px', fontSize: 11 }}
+        className="btn btn-secondary btn-sm"
+        style={{ fontSize: 11 }}
       >
-        {open ? '× close tweaks' : '⚙ tweaks'}
+        {open ? '× close' : '⚙ tweaks'}
       </button>
     </div>
   );

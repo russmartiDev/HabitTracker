@@ -75,16 +75,16 @@ export function CheckInForm({ habits }: { habits: { id: number; name: string }[]
           <Link href="/dashboard" className="btn btn-ghost">
             <Icon name="x" size={16} /> Close
           </Link>
-          <span className="t-eyebrow">
-            Step {step + 1} of {totalSteps}
+          <span className="notation-tag">
+            STEP {step + 1} / {totalSteps}
           </span>
         </div>
 
-        <div className="progress" style={{ marginBottom: 36, height: 4 }}>
-          <div className="progress-fill" style={{ width: `${pct}%`, background: 'var(--ink)' }} />
+        <div className="progress" style={{ marginBottom: 32, height: 4 }}>
+          <div className="progress-fill" style={{ width: `${pct}%`, background: 'var(--accent)' }} />
         </div>
 
-        <div className="onboard-card rise" key={step} style={{ padding: '40px 44px' }}>
+        <div className="onboard-card rise" key={step} style={{ padding: '36px 40px' }}>
           {isMood && <MoodStep mood={mood} setMood={setMood} />}
 
           {currentHabit && (
@@ -138,16 +138,16 @@ export function CheckInForm({ habits }: { habits: { id: number; name: string }[]
 function MoodStep({ mood, setMood }: { mood: number | null; setMood: (m: number) => void }) {
   return (
     <>
-      <div className="t-eyebrow" style={{ marginBottom: 12 }}>
-        Mood snapshot
+      <div className="notation-tag" style={{ marginBottom: 14 }}>
+        MOOD SNAPSHOT
       </div>
-      <h2 style={{ fontSize: 28, fontWeight: 600, letterSpacing: '-0.02em', margin: '0 0 8px' }}>
-        How are you, <span className="h-display" style={{ color: 'var(--accent-deep)' }}>really</span>?
+      <h2 className="h-display" style={{ fontSize: 26, margin: '0 0 8px' }}>
+        How are you, really?
       </h2>
-      <p className="muted" style={{ margin: '0 0 28px' }}>
-        No wrong answer. Pick the one that feels closest.
+      <p className="muted" style={{ margin: '0 0 24px', fontSize: 14 }}>
+        No wrong answer.
       </p>
-      <div className="row between" style={{ marginBottom: 22 }}>
+      <div className="row between" style={{ marginBottom: 18 }}>
         {MOOD_FACES.map((f, i) => (
           <button
             key={i}
@@ -161,7 +161,7 @@ function MoodStep({ mood, setMood }: { mood: number | null; setMood: (m: number)
       </div>
       <div
         className="row between t-eyebrow"
-        style={{ fontSize: 10, color: 'var(--ink-faint)', marginBottom: 22 }}
+        style={{ fontSize: 10, color: 'var(--ink-faint)', marginBottom: 20 }}
       >
         {MOOD_LABELS.map((l) => (
           <span key={l} style={{ flex: 1, textAlign: 'center' }}>
@@ -193,14 +193,14 @@ function HabitStep({
   ];
   return (
     <>
-      <div className="t-eyebrow row gap-8" style={{ marginBottom: 12 }}>
-        Habit {idx + 1} of {total}
+      <div className="notation-tag" style={{ marginBottom: 14 }}>
+        HABIT {idx + 1} / {total}
       </div>
-      <h2 style={{ fontSize: 28, fontWeight: 600, letterSpacing: '-0.02em', margin: '0 0 8px' }}>
-        Did you <span className="ink-underline">{name.toLowerCase()}</span> today?
+      <h2 className="h-display" style={{ fontSize: 26, margin: '0 0 8px' }}>
+        Did you {name.toLowerCase()} today?
       </h2>
-      <p className="muted" style={{ margin: '0 0 28px' }}>
-        Even a partial yes counts.
+      <p className="muted" style={{ margin: '0 0 24px', fontSize: 14 }}>
+        Even partial counts.
       </p>
       <div className="col gap-8">
         {options.map((o) => {
@@ -210,15 +210,17 @@ function HabitStep({
               key={o.v}
               onClick={() => onChange(o.v)}
               style={{
-                padding: '16px 18px',
+                padding: '14px 16px',
                 textAlign: 'left',
-                background: on ? 'var(--ink)' : 'var(--paper)',
-                color: on ? 'var(--canvas)' : 'var(--ink)',
-                border: `1px solid ${on ? 'var(--ink)' : 'var(--line)'}`,
-                borderRadius: 'var(--radius)',
+                background: on ? 'var(--ink-deep)' : 'var(--paper)',
+                color: on ? 'var(--paper)' : 'var(--ink)',
+                border: `1px solid ${on ? 'var(--ink-deep)' : 'var(--line-strong)'}`,
+                borderRadius: 'var(--radius-sm)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
+                fontFamily: 'var(--font-sans)',
+                boxShadow: on ? 'var(--shadow-md)' : 'var(--shadow-sm)',
               }}
             >
               <div>
@@ -245,22 +247,14 @@ function ReflectionStep({
 }) {
   return (
     <>
-      <div className="t-eyebrow" style={{ marginBottom: 12 }}>
-        Reflection
+      <div className="notation-tag" style={{ marginBottom: 14 }}>
+        REFLECTION
       </div>
-      <h2
-        style={{
-          fontSize: 26,
-          fontWeight: 600,
-          letterSpacing: '-0.02em',
-          margin: '0 0 8px',
-          lineHeight: 1.25,
-        }}
-      >
+      <h2 className="h-display" style={{ fontSize: 22, margin: '0 0 8px', lineHeight: 1.3 }}>
         {prompt}
       </h2>
-      <p className="muted" style={{ margin: '0 0 24px' }}>
-        Optional. A line, a paragraph, anything.
+      <p className="muted" style={{ margin: '0 0 20px', fontSize: 14 }}>
+        Optional. Stays private.
       </p>
       <textarea
         className="textarea"
@@ -268,12 +262,12 @@ function ReflectionStep({
         onChange={(e) => setValue(e.target.value)}
         maxLength={500}
         placeholder="Write whatever's there…"
-        style={{ minHeight: 140, fontSize: 15, lineHeight: 1.6 }}
+        style={{ minHeight: 130, fontSize: 14 }}
         autoFocus
       />
-      <div className="row between tiny muted" style={{ marginTop: 8 }}>
-        <span className="t-mono">{value.length} / 500</span>
-        <span>This stays private to you.</span>
+      <div className="row between tiny muted t-mono" style={{ marginTop: 8, fontSize: 11 }}>
+        <span>{value.length} / 500</span>
+        <span>PRIVATE</span>
       </div>
     </>
   );

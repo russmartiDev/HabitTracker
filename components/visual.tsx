@@ -1,30 +1,20 @@
 // Shared display primitives ported from Design/components.jsx.
 
-export function FlameStamp({ size = 64 }: { size?: number }) {
+export function FlameStamp({ size = 56 }: { size?: number }) {
   return (
-    <div style={{ position: 'relative', width: size, height: size }}>
-      <svg viewBox="0 0 64 64" width={size} height={size}>
-        <defs>
-          <linearGradient id="flame-grad" x1="0" y1="1" x2="0" y2="0">
-            <stop offset="0%" stopColor="oklch(0.55 0.16 35)" />
-            <stop offset="60%" stopColor="oklch(0.68 0.16 50)" />
-            <stop offset="100%" stopColor="oklch(0.82 0.14 75)" />
-          </linearGradient>
-        </defs>
-        <path
-          d="M32 6 C 36 14, 28 18, 32 24 C 36 20, 40 22, 42 28 C 44 32, 47 36, 47 42 C 47 51, 40 58, 32 58 C 24 58, 17 51, 17 42 C 17 36, 21 32, 22 28 C 24 32, 27 30, 27 26 C 30 28, 33 24, 32 18 C 33 12, 32 8, 32 6 Z"
-          fill="url(#flame-grad)"
-          stroke="oklch(0.45 0.14 35)"
-          strokeWidth={1}
-          strokeLinejoin="round"
-        />
-        <path
-          d="M28 38 C 28 34, 32 32, 33 36 C 36 34, 38 38, 36 44 C 35 50, 28 50, 27 44 C 26 41, 27 39, 28 38 Z"
-          fill="oklch(0.92 0.10 85)"
-          opacity={0.85}
-        />
-      </svg>
-    </div>
+    <svg viewBox="0 0 56 56" width={size} height={size}>
+      <path
+        d="M28 6 C 33 14, 25 18, 30 26 C 34 22, 40 28, 40 36 C 40 44, 34 50, 28 50 C 22 50, 16 44, 16 36 C 16 30, 19 28, 21 26 C 22 30, 25 28, 25 24 C 28 26, 30 22, 28 16 C 28 12, 28 8, 28 6 Z"
+        fill="rgb(255,218,68)"
+        stroke="rgb(15,23,42)"
+        strokeWidth={1.5}
+        strokeLinejoin="round"
+      />
+      <path
+        d="M24 32 C 24 28, 28 28, 30 30 C 32 32, 32 38, 28 42 C 24 38, 24 35, 24 32 Z"
+        fill="rgb(216,0,39)"
+      />
+    </svg>
   );
 }
 
@@ -44,7 +34,7 @@ export function Squiggle({ width = 80, color = 'currentColor' }: { width?: numbe
 
 export function Sparkline({
   values,
-  color = 'var(--accent)',
+  color = 'rgb(123,97,255)',
   height = 36,
   fill = false,
 }: {

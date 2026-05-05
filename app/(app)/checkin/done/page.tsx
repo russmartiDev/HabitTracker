@@ -68,13 +68,20 @@ export default async function CheckInDonePage({
 
         <XpAnimation target={xpEarned} />
 
-        <div className="onboard-card rise" style={{ padding: '44px 44px 36px' }}>
-          <div className="t-eyebrow row gap-6" style={{ marginBottom: 18 }}>
-            <Icon name="sparkles" size={12} /> A note from your companion
+        <div className="onboard-card rise" style={{ padding: '40px 40px 32px' }}>
+          <div className="notation-tag" style={{ marginBottom: 18 }}>
+            <Icon name="sparkles" size={11} stroke={2} /> COMPANION NOTE
           </div>
           <p
-            className="h-display"
-            style={{ fontSize: 26, lineHeight: 1.4, margin: '0 0 24px', color: 'var(--ink)' }}
+            style={{
+              fontSize: 22,
+              lineHeight: 1.45,
+              margin: '0 0 24px',
+              color: 'var(--ink-deep)',
+              fontFamily: 'var(--font-sans)',
+              fontWeight: 600,
+              letterSpacing: '-0.015em',
+            }}
           >
             &ldquo;{ci.ai_message ?? '—'}&rdquo;
           </p>

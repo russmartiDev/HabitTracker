@@ -13,7 +13,7 @@ export default function SignupPage() {
         Create account
       </div>
       <h1 className="h-display" style={{ fontSize: 34, margin: 0 }}>
-        Welcome to <span className="ink-underline">lichen</span>.
+        Welcome to <strong>lichen</strong>.
       </h1>
       <p className="muted" style={{ marginTop: 10, marginBottom: 28 }}>
         A warm, daily habit ritual. Five questions to start.

@@ -12,6 +12,7 @@ This is the implementation of `bootstrap-habit-tracker` (see `../openspec/change
 - **Auth.js v5** (Credentials + JWT, argon2id password hashing)
 - **Anthropic Claude Haiku 4.5** for check-in analysis + chatbot (optional — falls back to algorithmic when no API key)
 - All state derived from `check_ins` (no `user_stats` table)
+- **Visual identity: Finesse** — white parchment canvas, black ink hero, violet + finesse-yellow accents, Inter / Public Sans / Space Mono, sharp 6px corners, gradient page washes. See `openspec/changes/redesign-finesse-aesthetic/` for the design rationale.
 
 ## Quick start
 
