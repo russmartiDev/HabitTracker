@@ -31,12 +31,17 @@ export function ChatInterface({
   const [sending, setSending] = useState(false);
   const [crisisBanner, setCrisisBanner] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [messages, sending]);
+
+  useEffect(() => {
+    if (!sending) inputRef.current?.focus();
+  }, [sending]);
 
   async function send() {
     const text = input.trim();
@@ -175,6 +180,7 @@ export function ChatInterface({
           </div>
           <div className="row gap-8">
             <input
+              ref={inputRef}
               className="input"
               value={input}
               onChange={(e) => setInput(e.target.value)}
@@ -185,6 +191,7 @@ export function ChatInterface({
                 }
               }}
               placeholder="What's there to say?"
+              autoFocus
               disabled={sending}
             />
             <button
