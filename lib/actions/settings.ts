@@ -34,6 +34,15 @@ export async function updateProfileAction(
   return { ok: true };
 }
 
+export async function updateToneAction(pref: string): Promise<void> {
+  const parsed = z.enum(['encouraging', 'direct', 'playful']).safeParse(pref);
+  if (!parsed.success) return;
+  const user = await requireUser();
+  const db = getDb();
+  db.prepare(`UPDATE users SET communication_pref = ? WHERE id = ?`).run(parsed.data, user.id);
+  revalidatePath('/', 'layout');
+}
+
 export async function resetUserDataAction(): Promise<void> {
   const user = await requireUser();
   const db = getDb();

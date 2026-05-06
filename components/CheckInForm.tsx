@@ -147,26 +147,20 @@ function MoodStep({ mood, setMood }: { mood: number | null; setMood: (m: number)
       <p className="muted" style={{ margin: '0 0 24px', fontSize: 14 }}>
         No wrong answer.
       </p>
-      <div className="row between" style={{ marginBottom: 18 }}>
+      <div className="row between" style={{ marginBottom: 20 }}>
         {MOOD_FACES.map((f, i) => (
-          <button
-            key={i}
-            className={`mood-face ${mood === i + 1 ? 'mood-face-selected' : ''}`}
-            onClick={() => setMood(i + 1)}
-            style={{ width: 64, height: 64, fontSize: 30 }}
-          >
-            {f}
-          </button>
-        ))}
-      </div>
-      <div
-        className="row between t-eyebrow"
-        style={{ fontSize: 10, color: 'var(--ink-faint)', marginBottom: 20 }}
-      >
-        {MOOD_LABELS.map((l) => (
-          <span key={l} style={{ flex: 1, textAlign: 'center' }}>
-            {l}
-          </span>
+          <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+            <button
+              className={`mood-face ${mood === i + 1 ? 'mood-face-selected' : ''}`}
+              onClick={() => setMood(i + 1)}
+              style={{ width: 64, height: 64, fontSize: 30 }}
+            >
+              {f}
+            </button>
+            <span className="t-eyebrow" style={{ fontSize: 10, color: 'var(--ink-faint)' }}>
+              {MOOD_LABELS[i]}
+            </span>
+          </div>
         ))}
       </div>
     </>

@@ -2,6 +2,7 @@ import { requireUser } from '@/lib/auth';
 import { getDb } from '@/lib/db';
 import { hasApiKey } from '@/lib/ai';
 import { ChatInterface } from '@/components/ChatInterface';
+import { TonePicker } from '@/components/TonePicker';
 import type { ChatMessageRow } from '@/lib/types';
 
 export const dynamic = 'force-dynamic';
@@ -18,7 +19,7 @@ export default async function ChatPage() {
   const firstName = user.name.split(/\s+/)[0];
 
   return (
-    <div className="rise" style={{ display: 'flex', flexDirection: 'column' }}>
+    <div className="rise" style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
       <div className="page-wash">
         <div className="page-wash-inner">
           <div className="page-header">
@@ -27,17 +28,19 @@ export default async function ChatPage() {
                 COMPANION
               </div>
               <h1 className="page-title">Think out loud.</h1>
-              <p className="page-subtitle">
-                Context from your last 7 days · tone{' '}
-                <strong style={{ color: 'var(--ink-deep)' }}>{user.communication_pref}</strong>.
-              </p>
+              <div className="row gap-8 wrap" style={{ alignItems: 'baseline' }}>
+                <p className="page-subtitle" style={{ margin: 0 }}>
+                  Context from your last 7 days · tone
+                </p>
+                <TonePicker currentPref={user.communication_pref} />
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="page-body">
-        <div className="page-body-inner">
+      <div className="page-body" style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+        <div className="page-body-inner" style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
           {!hasApiKey() && (
             <div
               className="card"

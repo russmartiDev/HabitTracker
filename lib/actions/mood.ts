@@ -1,7 +1,7 @@
 'use server';
 
 import { z } from 'zod';
-import { redirect } from 'next/navigation';
+import { revalidatePath } from 'next/cache';
 import { requireUser } from '@/lib/auth';
 import { getDb } from '@/lib/db';
 
@@ -17,7 +17,7 @@ export interface MoodLogPayload {
   note: string;
 }
 
-export async function logMoodAction(raw: MoodLogPayload): Promise<void> {
+export async function logMoodAction(raw: MoodLogPayload): Promise<{ ok: true }> {
   const user = await requireUser();
   const parsed = schema.safeParse(raw);
   if (!parsed.success) {
@@ -52,5 +52,6 @@ export async function logMoodAction(raw: MoodLogPayload): Promise<void> {
     Date.now(),
   );
 
-  redirect('/dashboard');
+  revalidatePath('/dashboard');
+  return { ok: true };
 }

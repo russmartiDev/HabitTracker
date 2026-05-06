@@ -228,6 +228,28 @@ export function OnboardingFlow({ userName }: { userName: string }) {
                 </button>
               );
             })}
+            {habits
+              .filter((name) => !HABIT_TEMPLATES.some((t) => t.name === name))
+              .map((name) => (
+                <button
+                  key={name}
+                  type="button"
+                  className="chip"
+                  onClick={() => toggleHabit(name)}
+                  style={{
+                    padding: '8px 14px',
+                    background: 'var(--ink)',
+                    color: 'var(--canvas)',
+                    borderColor: 'var(--ink)',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 6,
+                  }}
+                >
+                  {name}
+                  <Icon name="x" size={12} />
+                </button>
+              ))}
           </div>
           <div className="row gap-8" style={{ marginBottom: 8 }}>
             <input

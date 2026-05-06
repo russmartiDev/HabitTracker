@@ -1,17 +1,20 @@
 'use client';
 
 import { useState, useTransition } from 'react';
+import { useRouter } from 'next/navigation';
 import { Icon } from '@/components/Icon';
-import { MOOD_FACES } from '@/components/visual';
+import { MOOD_FACES, MOOD_LABELS } from '@/components/visual';
 import { logMoodAction } from '@/lib/actions/mood';
 
 const TAGS = ['work', 'family', 'sleep', 'social', 'health', 'movement', 'food'];
 
 export function MoodLogForm() {
+  const router = useRouter();
   const [mood, setMood] = useState<number | null>(null);
   const [tags, setTags] = useState<string[]>([]);
   const [note, setNote] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [hoveredMood, setHoveredMood] = useState<number | null>(null);
   const [isPending, startTransition] = useTransition();
 
   function toggleTag(t: string) {
@@ -24,10 +27,9 @@ export function MoodLogForm() {
     startTransition(async () => {
       try {
         await logMoodAction({ mood, tags, note });
+        router.push('/dashboard');
       } catch (err) {
-        const e = err as Error;
-        if (e.message === 'NEXT_REDIRECT') return;
-        setError(e.message);
+        setError((err as Error).message);
       }
     });
   }
@@ -39,14 +41,36 @@ export function MoodLogForm() {
       </div>
       <div className="row between" style={{ marginBottom: 18 }}>
         {MOOD_FACES.map((f, i) => (
-          <button
-            key={i}
-            className={`mood-face ${mood === i + 1 ? 'mood-face-selected' : ''}`}
-            onClick={() => setMood(i + 1)}
-            style={{ width: 56, height: 56, fontSize: 26 }}
-          >
-            {f}
-          </button>
+          <div key={i} style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            {hoveredMood === i && (
+              <div style={{
+                position: 'absolute',
+                bottom: 'calc(100% + 6px)',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                background: 'var(--ink-deep)',
+                color: 'var(--paper)',
+                fontSize: 11,
+                fontWeight: 600,
+                padding: '3px 8px',
+                borderRadius: 'var(--radius-sm)',
+                whiteSpace: 'nowrap',
+                pointerEvents: 'none',
+                zIndex: 10,
+              }}>
+                {MOOD_LABELS[i]}
+              </div>
+            )}
+            <button
+              className={`mood-face ${mood === i + 1 ? 'mood-face-selected' : ''}`}
+              onClick={() => setMood(i + 1)}
+              onMouseEnter={() => setHoveredMood(i)}
+              onMouseLeave={() => setHoveredMood(null)}
+              style={{ width: 56, height: 56, fontSize: 26 }}
+            >
+              {f}
+            </button>
+          </div>
         ))}
       </div>
 

@@ -125,7 +125,7 @@ a { text-decoration: none; }
 .app-shell {
   display: grid;
   grid-template-columns: 232px 1fr;
-  min-height: 100vh;
+  height: 100vh;
 }
 .sidebar {
   position: sticky;
@@ -141,7 +141,9 @@ a { text-decoration: none; }
 .main {
   position: relative;
   min-width: 0;
-  padding: 0 0 64px;
+  height: 100%;
+  overflow-y: auto;
+  padding: 0 0 48px;
 }
 
 /* Non-dashboard screens get explicit padding via .page-pad wrapper */
